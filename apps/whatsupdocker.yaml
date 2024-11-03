@@ -1,0 +1,39 @@
+services:
+  whatsupdocker:
+    image: fmartinou/whats-up-docker:6.4.1
+    container_name: wud
+    hostname: wud.palomabeach.ovh
+    restart: unless-stopped
+    environment:
+    - WUD_WATCHER_SERVARR_SOCKET=/var/run/docker.sock
+    - WUD_WATCHER_SERVARR_CRON=0 0,6,12,18 * * *
+    - WUD_TRIGGER_DOCKERCOMPOSE_SERVARR_THRESHOLD=minor
+    - WUD_TRIGGER_DOCKERCOMPOSE_SERVARR_MODE=batch
+    - WUD_TRIGGER_DOCKERCOMPOSE_SERVARR_FILE=/wud/docker-compose.yaml
+    - WUD_TRIGGER_DOCKERCOMPOSE_SERVARR_BACKUP=true
+    - WUD_TRIGGER_DOCKERCOMPOSE_SERVARR_PRUNE=true
+    - DOCKER_HOST=${DOCKER_HOST}
+    volumes:
+    - /etc/locatime:/etc/localtime:ro
+    #- /var/run/docker.sock:/var/run/docker.sock
+    - ./wud/store:/store
+    - ./docker-compose.yaml:/wud/docker-compose.yaml
+    labels:
+    # TRAEFIK LABELS
+    - traefik.enable=true
+    - traefik.http.routers.whatsupdocker.rule=Host(`wud.palomabeach.ovh`)
+    - traefik.http.routers.whatsupdocker.entrypoints=websecure
+    - traefik.http.routers.whatsupdocker.tls=true
+    - traefik.http.routers.whatsupdocker.service=whatsupdocker
+    - traefik.http.services.whatsupdocker.loadbalancer.server.port=3000
+    # WUD LABELS
+    - wud.tag.include=^v?\d\.\d{1,3}(\.\d{1,3})?$$
+    networks:
+      traefik_proxy:
+        aliases:
+        - whatsupdocker
+        ipv4_address: 172.10.0.100
+      socket_proxy:
+        aliases:
+        - whatsupdocker
+        ipv4_address: 172.30.0.6

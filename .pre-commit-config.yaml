@@ -1,0 +1,28 @@
+---
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.4.0
+  hooks:
+  - id: check-yaml
+    exclude: ^adguard/|^homarr/|^traefik/|^vault/|^overseer/|^prowlarr/|^radarr/|^sonarr/|^lidarr/|^bazarr/
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.4.0
+  hooks:
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+  - id: check-json
+  - id: check-case-conflict
+  - id: check-executables-have-shebangs
+  - id: check-docstring-first
+- repo: https://github.com/adrienverge/yamllint
+  rev: v1.30.0
+  hooks:
+  - id: yamllint
+    args: [--config-file, .yamllint-cfg.yaml]
+    exclude: ^adguard/|^homarr/|^traefik/|^vault/|^overseer/|^prowlarr/|^radarr/|^sonarr/|^lidarr/|^bazarr/
+- repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
+  rev: 0.2.2
+  hooks:
+  - id: yamlfmt
+    args: [--mapping, '2', --sequence, '2', --offset, '0', --width, '600']
+    exclude: ^adguard/|^homarr/|^traefik/|^vault/|^overseer/|^prowlarr/|^radarr/|^sonarr/|^lidarr/|^bazarr/

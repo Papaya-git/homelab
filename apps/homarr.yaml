@@ -1,0 +1,29 @@
+services:
+  homarr:
+    container_name: homarr
+    image: ghcr.io/ajnart/homarr:latest
+    hostname: homarr.palomabeach.ovh
+    restart: unless-stopped
+    environment:
+      - DOCKER_HOST=${DOCKER_HOST}
+    volumes:
+      - ${DOCKER_APP_DATA}/homarr/configs:/app/data/configs
+      - ${DOCKER_APP_DATA}/homarr/icons:/app/public/icons
+      - /etc/localtime:/etc/localtime:ro
+      #- /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.homarr.rule=Host(`homarr.palomabeach.ovh`)
+      - traefik.http.routers.homarr.entrypoints=websecure
+      - traefik.http.routers.homarr.tls=true
+      - traefik.http.routers.homarr.service=homarr
+      - traefik.http.services.homarr.loadbalancer.server.port=7575
+    networks:
+      traefik_proxy:
+        aliases:
+        - homarr
+        ipv4_address: 172.10.0.5
+      socket_proxy:
+        aliases:
+        - homarr
+        ipv4_address: 172.30.0.3

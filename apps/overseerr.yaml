@@ -1,0 +1,28 @@
+services:
+  overseerr:
+    image: linuxserver/overseerr:latest
+    container_name: overseerr
+    hostname: overseerr.palomabeach.ovh
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - LOG_LEVEL=debug
+      - TZ=${TZ}
+      - PORT=5055
+    volumes:
+      - ${DOCKER_APP_DATA}/overseerr/config:/config
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.overseerr.rule=Host(`overseerr.palomabeach.ovh`)
+      - traefik.http.routers.overseerr.entrypoints=websecure
+      - traefik.http.routers.overseerr.tls=true
+      - traefik.http.routers.overseerr.service=overseerr
+      - traefik.http.services.overseerr.loadbalancer.server.port=5055
+    networks:
+      traefik_proxy:
+        aliases:
+        - overseerr
+        ipv4_address: 172.10.0.13

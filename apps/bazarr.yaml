@@ -1,0 +1,27 @@
+services:
+  bazarr:
+    container_name: bazarr
+    image: linuxserver/bazarr:latest
+    hostname: bazarr.palomabeach.ovh
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${DOCKER_APP_DATA}/bazarr/config:/config
+      - ${NAS}:/data
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.bazarr.rule=Host(`bazarr.palomabeach.ovh`)
+      - traefik.http.routers.bazarr.entrypoints=websecure
+      - traefik.http.routers.bazarr.tls=true
+      - traefik.http.routers.bazarr.service=bazarr
+      - traefik.http.services.bazarr.loadbalancer.server.port=6767
+    networks:
+      traefik_proxy:
+        aliases:
+          - bazarr
+        ipv4_address: 172.10.0.24

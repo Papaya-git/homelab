@@ -1,0 +1,51 @@
+include:
+
+  ## NETWORKS ##
+  - apps/networks.yaml
+
+  ## DATABASES ##
+  #- apps/databases.yaml
+
+  ## CORE ##
+  - apps/socket-proxy.yaml
+  - apps/garbage-collector.yaml
+  #- apps/whatsupdocker.yaml
+  - apps/traefik.yaml
+  - apps/adguardhome.yaml
+  - apps/homarr.yaml
+  - apps/portainer.yaml
+  #- apps/vault.yaml
+
+  ## FILE MANAGEMENT ##
+  - apps/filebrowser.yaml
+  #- apps/nextcloud.yaml
+
+  ## TORRENT ##
+  - apps/qbittorrent.yaml
+
+  ## MEDIA ##
+  - apps/plex.yaml
+  - apps/jellyfin.yaml
+
+  ## SERVARR ##
+  - apps/prowlarr.yaml
+  - apps/radarr.yaml
+  - apps/sonarr.yaml
+  - apps/bazarr.yaml
+  - apps/lidarr.yaml
+  - apps/overseerr.yaml
+  - apps/jellyseerr.yaml
+  - apps/flaresolverr.yaml
+
+  ## MONITORING/OBSERVABILITY ##
+  #- apps/dozzle.yaml
+  #- apps/grafana.yaml
+  #- apps/prometheus.yaml
+  #- apps/netdata.yaml
+  - apps/tautulli.yaml
+  #- apps/uptime-kuma.yaml
+  
+  ## TOOLS ##
+  - apps/it-tools.yaml
+  #- apps/paperless-ngx.yaml
+

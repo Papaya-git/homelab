@@ -1,0 +1,27 @@
+services:
+  filebrowser:
+    image: filebrowser/filebrowser:s6
+    container_name: filebrowser
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ}
+      - PUID=${PUID}
+      - PGID=${PGID}
+    volumes:
+      - ${DOCKER_APP_DATA}/filebrowser/config:/config
+      - ${DOCKER_APP_DATA}/filebrowser/database:/database
+      - ${NAS}:/data
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.filebrowser.rule=Host(`filebrowser.palomabeach.ovh`)
+      - traefik.http.routers.filebrowser.entrypoints=websecure
+      - traefik.http.routers.filebrowser.tls=true
+      - traefik.http.routers.filebrowser.service=filebrowser
+      - traefik.http.services.filebrowser.loadbalancer.server.port=80
+    networks:
+      traefik_proxy:
+        aliases:
+          - filebrowser
+        ipv4_address: 172.10.0.32

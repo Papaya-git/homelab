@@ -1,0 +1,25 @@
+services:
+  jellyseerr:
+    container_name: jellyseerr
+    image: ghcr.io/hotio/jellyseerr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
+    volumes:
+      - ${DOCKER_APP_DATA}/jellyseerr/config:/config
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.jellyseerr.rule=Host(`jellyseerr.palomabeach.ovh`)
+      - traefik.http.routers.jellyseerr.entrypoints=websecure
+      - traefik.http.routers.jellyseerr.tls=true
+      - traefik.http.routers.jellyseerr.service=jellyseerr
+      - traefik.http.services.jellyseerr.loadbalancer.server.port=5055
+    networks:
+      traefik_proxy:
+        aliases:
+        - jellyseerr
+        ipv4_address: 172.10.0.11

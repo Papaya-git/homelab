@@ -1,0 +1,44 @@
+services:
+  qbittorrent:
+    container_name: qbittorrent
+    image: ghcr.io/hotio/qbittorrent
+    hostname: qbittorrent.palomabeach.ovh
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
+      - VPN_ENABLED=true
+      - VPN_LAN_NETWORK=192.168.1.0/24,192.168.27.70/32
+      - VPN_CONF=wg0
+      - VPN_ADDITIONAL_PORTS
+      - PRIVOXY_ENABLED=false
+    volumes:
+      - ${DOCKER_APP_DATA}/aio-qbittorrent/config:/config
+      - ${DOCKER_APP_DATA}/aio-qbittorrent/wireguard/mullvad.conf:/config/wireguard/wg0.conf
+      - ${NAS}/downloads:/data/downloads
+    cap_add:
+      - NET_ADMIN
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv6.conf.default.disable_ipv6=1
+      - net.ipv6.conf.all.disable_ipv6=1
+      - net.ipv6.conf.lo.disable_ipv6=1
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.palomabeach.ovh`)
+      - traefik.http.routers.qbittorrent.entrypoints=websecure
+      - traefik.http.routers.qbittorrent.tls=true
+      - traefik.http.routers.qbittorrent.service=qbittorrent
+      - traefik.http.services.qbittorrent.loadbalancer.server.port=8080
+    healthcheck:
+      test: ping -c 1 www.google.com || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      traefik_proxy:
+        aliases:
+          - qbittorrent
+        ipv4_address: 172.10.0.30
