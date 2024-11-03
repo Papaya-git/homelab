@@ -1,0 +1,30 @@
+services:
+  mariadb:
+    container_name: mariadb
+    image: lscr.io/linuxserver/mariadb:latest
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - ${DOCKER_APP_DATA}/mariadb/config:/config
+      - ${DOCKER_APP_DATA}/mariadb/init:/docker-entrypoint-initdb.d
+    networks:
+      database_proxy:
+        aliases:
+        - mariadb
+        ipv4_address: 172.50.0.5
+
+  redis:
+    image: redis:alpine
+    container_name: nextcloud_redis
+    restart: unless-stopped
+    networks:
+      database_proxy:
+        aliases:
+        - redis
+        ipv4_address: 172.50.0.6

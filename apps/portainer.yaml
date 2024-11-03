@@ -1,0 +1,30 @@
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      # - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${DOCKER_APP_DATA}/portainer-data:/data
+    command:
+      - --host
+      - tcp://socket-proxy:2375
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.portainer.rule=Host(`portainer.palomabeach.ovh`)
+      - traefik.http.routers.portainer.entrypoints=websecure
+      - traefik.http.routers.portainer.tls=true
+      - traefik.http.routers.portainer.service=portainer
+      - traefik.http.services.portainer.loadbalancer.server.port=9000
+    networks:
+      traefik_proxy:
+        aliases:
+        - portainer
+        ipv4_address: 172.10.0.3
+      socket_proxy:
+        aliases:
+        - portainer
+        ipv4_address: 172.30.0.4

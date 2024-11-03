@@ -1,0 +1,31 @@
+services:
+  vault:
+    image: vault:1.13.3
+    container_name: vault
+    hostname: vault.palomabeach.ovh
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ}
+      - VAULT_ADDR=https://vault.palomabeach.ovh
+    volumes:
+      - ${DOCKER_APP_DATA}/vault/volume/logs:/vault/logs:rw
+      - ${DOCKER_APP_DATA}/vault/volume/data:/vault/data:rw
+      - ${DOCKER_APP_DATA}/vault/volume/policies:/vault/policies:rw
+      - ${DOCKER_APP_DATA}/vault/volume/config:/vault/config:rw
+      - /etc/localtime:/etc/localtime:ro
+    cap_add:
+      - IPC_LOCK
+    entrypoint: vault server -config=/vault/config/vault.json
+    labels:
+      - traefik.enable=true
+      # [HTTP] Config for classic HTTPS traefik handling
+      - traefik.http.routers.vault.rule=Host(`vault.palomabeach.ovh`)
+      - traefik.http.routers.vault.entrypoints=websecure
+      - traefik.http.routers.vault.tls=true
+      - traefik.http.routers.vault.service=vault
+      - traefik.http.services.vault.loadbalancer.server.port=80
+    networks:
+      traefik_proxy:
+        aliases:
+        - vault
+        ipv4_address: 172.10.0.50

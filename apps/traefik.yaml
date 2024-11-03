@@ -1,0 +1,47 @@
+services:
+  traefik:
+    image: traefik:v3.1.0
+    container_name: traefik
+    hostname: traefik.palomabeach.ovh
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      - TZ=${TZ}
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+      - TRAEFIK_DASHBOARD_CREDENTIALS=$${TRAEFIK_DASHBOARD_CREDENTIALS}
+      - DOCKER_HOST=${DOCKER_HOST}
+    ports:
+      - 80:80/tcp
+      - 443:443/tcp
+    volumes:
+      #- /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/localtime:/etc/localtime:ro
+      - ${DOCKER_APP_DATA}/traefik/config/acme.json:/acme.json
+      - ${DOCKER_APP_DATA}/traefik/config/traefik.yml:/traefik.yml:ro
+      - ${DOCKER_APP_DATA}/traefik/config/config.yml:/config.yml:ro
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.traefik.entrypoints=web
+      - traefik.http.routers.traefik.rule=Host(`traefik.palomabeach.ovh`)
+      - traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_DASHBOARD_CREDENTIALS}
+      - traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https
+      - traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https
+      - traefik.http.routers.traefik.middlewares=traefik-https-redirect
+      - traefik.http.routers.traefik-secure.entrypoints=websecure
+      - traefik.http.routers.traefik-secure.rule=Host(`traefik.palomabeach.ovh`)
+      - traefik.http.routers.traefik-secure.middlewares=traefik-auth
+      - traefik.http.routers.traefik-secure.tls=true
+      - traefik.http.routers.traefik-secure.tls.certresolver=cloudflare
+      - traefik.http.routers.traefik-secure.tls.domains[0].main=palomabeach.ovh
+      - traefik.http.routers.traefik-secure.tls.domains[0].sans=*.palomabeach.ovh
+      - traefik.http.routers.traefik-secure.service=api@internal
+    networks:
+      traefik_proxy:
+        aliases:
+        - traefik
+        ipv4_address: 172.10.0.2
+      socket_proxy:
+        aliases:
+        - traefik
+        ipv4_address: 172.30.0.15

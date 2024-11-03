@@ -1,0 +1,25 @@
+# appdata
+appdata/adguardhome
+appdata/aio-qbittorrent
+appdata/bazarr
+appdata/docker-gc
+appdata/filebrowser
+appdata/homarr
+appdata/jellyfin
+appdata/jellyseerr
+appdata/lidarr
+appdata/mariadb
+appdata/nextcloud
+appdata/nginx-nextcloud
+appdata/overseerr
+appdata/portainer
+appdata/portainer-data
+appdata/prowlarr
+appdata/radarr
+appdata/readarr
+appdata/sonarr
+appdata/tautulli
+appdata/traefik
+
+# env file
+.env

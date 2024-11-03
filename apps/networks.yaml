@@ -1,0 +1,31 @@
+networks:
+  mac_vlan:
+    name: docker_lan_network
+    driver: macvlan
+    driver_opts:
+      parent: enp6s18
+    ipam:
+      config:
+      - subnet: 192.168.1.0/24
+        gateway: 192.168.1.254
+
+  traefik_proxy:
+    name: traefik_proxy
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 172.10.0.0/24
+
+  socket_proxy:
+    name: socket_proxy
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 172.30.0.0/24 
+
+  database_proxy:
+    name: database_proxy
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 172.50.0.0/24

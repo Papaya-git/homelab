@@ -1,0 +1,27 @@
+services:
+  lidarr:
+    container_name: lidarr
+    image: linuxserver/lidarr:latest
+    hostname: lidarr.palomabeach.ovh
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${DOCKER_APP_DATA}/lidarr/config:/config
+      - ${NAS}:/data
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.lidarr.rule=Host(`lidarr.palomabeach.ovh`)
+      - traefik.http.routers.lidarr.entrypoints=websecure
+      - traefik.http.routers.lidarr.tls=true
+      - traefik.http.routers.lidarr.service=lidarr
+      - traefik.http.services.lidarr.loadbalancer.server.port=8686
+    networks:
+      traefik_proxy:
+        aliases:
+          - lidarr
+        ipv4_address: 172.10.0.23
